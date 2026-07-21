@@ -1,0 +1,25 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-multipart==0.0.20
+openai==1.59.6
+pypdf==5.1.0
+httpx==0.28.1
+pyjwt[crypto]==2.10.1
+supabase==2.11.0
+
+# --- LIVE-mode OCR pipeline -------------------------------------------------
+# Image preprocessing + rasterizing scanned PDFs.
+pillow==11.1.0
+numpy==2.2.1
+opencv-python-headless==4.11.0.86
+PyMuPDF==1.25.2
+# OCR engines. Tesseract also needs the system binary:
+#   Windows: https://github.com/UB-Mannheim/tesseract/wiki  (set TESSERACT_CMD if not on PATH)
+#   macOS:   brew install tesseract      Linux: apt-get install tesseract-ocr
+pytesseract==0.3.13
+# EasyOCR — best accuracy on Indian documents. NOTE: pulls in PyTorch (~2GB).
+# The app still runs on Tesseract alone if this install is skipped or fails;
+# EasyOCR is imported lazily and probed at runtime.
+easyocr==1.7.2

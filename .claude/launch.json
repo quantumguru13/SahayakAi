@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sahayak-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "sahayak-ai/frontend", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

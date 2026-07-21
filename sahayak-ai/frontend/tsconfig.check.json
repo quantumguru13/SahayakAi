@@ -1,0 +1,21 @@
+{
+  "_comment": "Optional dev helper (safe to delete). Fast type-check of just the intake-pipeline files: `npx tsc -p tsconfig.check.json`. Next.js build ignores this file and uses only tsconfig.json.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true, "skipLibCheck": true, "incremental": false },
+  "include": [
+    "src/app/page.tsx",
+    "src/app/dashboard/page.tsx",
+    "src/app/beneficiaries/page.tsx",
+    "src/app/intake/page.tsx",
+    "src/components/layout/app-shell.tsx",
+    "src/components/layout/mobile-nav.tsx",
+    "src/components/layout/topbar.tsx",
+    "src/components/layout/sidebar.tsx",
+    "src/components/shared/branded-loader.tsx",
+    "src/components/dashboard/metric-cards.tsx",
+    "src/components/dashboard/onboarding-hero.tsx",
+    "src/lib/types.ts",
+    "src/lib/api.ts",
+    "src/lib/hooks.ts"
+  ]
+}

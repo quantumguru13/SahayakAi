@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Deep Zinc Slate canvas (#09090b) + Cobalt Blue (#2563eb) */
+    --background: 240 10% 3.9%; /* #09090b */
+    --foreground: 0 0% 98%;
+
+    --card: 240 6% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 240 5% 16%;
+    --accent-foreground: 0 0% 98%;
+
+    --primary: 221 83% 53%; /* #2563eb cobalt */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+
+    --destructive: 347 77% 50%; /* crimson */
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 160 84% 39%; /* emerald */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%; /* amber */
+    --warning-foreground: 240 10% 4%;
+
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.7rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Subtle scrollbar for the workspace aesthetic */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(240 4% 20%);
+    border-radius: 9999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(240 4% 28%);
+  }
+}
+
+@layer utilities {
+  .grid-bg {
+    background-image: radial-gradient(
+      hsl(240 4% 14%) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+  }
+  .glow-primary {
+    box-shadow: 0 0 0 1px hsl(221 83% 53% / 0.4),
+      0 8px 30px -8px hsl(221 83% 53% / 0.45);
+  }
+}
+
+/* Markdown (react-markdown) styling for briefs & reports */
+.prose-brief h1,
+.prose-brief h2,
+.prose-brief h3 {
+  @apply font-semibold text-foreground mt-4 mb-2;
+}
+.prose-brief h1 { @apply text-xl; }
+.prose-brief h2 { @apply text-lg; }
+.prose-brief h3 { @apply text-base; }
+.prose-brief p { @apply text-sm text-muted-foreground leading-relaxed my-2; }
+.prose-brief ul { @apply list-disc pl-5 my-2 space-y-1; }
+.prose-brief ol { @apply list-decimal pl-5 my-2 space-y-1; }
+.prose-brief li { @apply text-sm text-muted-foreground; }
+.prose-brief strong { @apply text-foreground font-semibold; }
+.prose-brief em { @apply text-muted-foreground; }
+.prose-brief blockquote {
+  @apply border-l-2 border-primary/60 pl-3 italic text-sm text-muted-foreground my-3;
+}
+.prose-brief table { @apply w-full text-sm my-3 border-collapse; }
+.prose-brief th,
+.prose-brief td {
+  @apply border border-border px-3 py-1.5 text-left;
+}
+.prose-brief th { @apply bg-muted/50 font-semibold text-foreground; }
+.prose-brief code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-xs font-mono;
+}
