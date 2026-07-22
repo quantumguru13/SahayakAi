@@ -132,6 +132,11 @@ def tesseract_available() -> bool:
     if not _has("pytesseract"):
         return False
     try:
+        import sys
+        import types
+
+        if "pandas" not in sys.modules:
+            sys.modules["pandas"] = types.ModuleType("pandas")
         import pytesseract
 
         cmd = resolve_tesseract_cmd()
@@ -279,6 +284,11 @@ def _pdf_first_page_png(content: bytes) -> bytes | None:
 # Individual OCR engines — each returns (text, confidence 0-1).
 # --------------------------------------------------------------------------- #
 def _ocr_tesseract(image_bytes: bytes) -> tuple[str, float]:
+    import sys
+    import types
+
+    if "pandas" not in sys.modules:
+        sys.modules["pandas"] = types.ModuleType("pandas")
     import pytesseract
     from PIL import Image
 

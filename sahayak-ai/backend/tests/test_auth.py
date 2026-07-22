@@ -12,13 +12,15 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_auth_config_reports_disabled_in_demo() -> None:
+def test_auth_config_reports_disabled_in_demo(monkeypatch) -> None:
+    monkeypatch.setattr(authmod.settings, "supabase_url", "")
     r = client.get("/api/v1/auth/config")
     assert r.status_code == 200
     assert r.json()["auth_enabled"] is False
 
 
-def test_me_returns_demo_user_when_auth_disabled() -> None:
+def test_me_returns_demo_user_when_auth_disabled(monkeypatch) -> None:
+    monkeypatch.setattr(authmod.settings, "supabase_url", "")
     r = client.get("/api/v1/auth/me")
     assert r.status_code == 200
     body = r.json()
@@ -26,8 +28,9 @@ def test_me_returns_demo_user_when_auth_disabled() -> None:
     assert body["org_id"] == "default-org"
 
 
-def test_protected_route_open_when_auth_disabled() -> None:
+def test_protected_route_open_when_auth_disabled(monkeypatch) -> None:
     # No Authorization header, yet the demo bypass allows access.
+    monkeypatch.setattr(authmod.settings, "supabase_url", "")
     r = client.get("/api/v1/dashboard/metrics")
     assert r.status_code == 200
 

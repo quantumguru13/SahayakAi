@@ -15,6 +15,7 @@ import {
 import { useResetDemo } from "@/lib/hooks";
 import { useToast } from "@/components/ui/toast";
 import { clearRememberedMode } from "@/lib/session";
+import { logoutLocal } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -42,7 +43,7 @@ function JudgeResetButton() {
       }
       disabled={isPending}
       className={cn(
-        "flex w-full items-center justify-center gap-2 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 px-3 py-2.5 text-xs font-semibold text-primary transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+        "flex w-full items-center justify-center gap-2 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 px-3 py-2 text-xs font-semibold text-primary transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         isPending && "opacity-70 cursor-not-allowed"
       )}
     >
@@ -52,7 +53,7 @@ function JudgeResetButton() {
   );
 }
 
-/** Returns to the login page so the presenter can switch Live <-> Demo on stage. */
+/** Returns to the mode selection page. */
 function SwitchModeButton() {
   const router = useRouter();
   return (
@@ -61,10 +62,28 @@ function SwitchModeButton() {
         clearRememberedMode();
         router.push("/");
       }}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-3 py-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+      className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+    >
+      <RefreshCw className="h-3.5 w-3.5" />
+      Switch Mode
+    </button>
+  );
+}
+
+/** Clears authentication session and returns to /login. */
+function LogoutButton() {
+  const router = useRouter();
+  return (
+    <button
+      onClick={() => {
+        clearRememberedMode();
+        logoutLocal();
+        router.push("/login");
+      }}
+      className="flex w-full items-center justify-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs font-semibold text-destructive/90 transition-colors hover:bg-destructive/15 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
     >
       <LogOut className="h-3.5 w-3.5" />
-      Switch mode
+      Sign Out
     </button>
   );
 }
@@ -109,12 +128,13 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-border p-4 space-y-3">
+      <div className="border-t border-border p-3 space-y-2">
         <JudgeResetButton />
         <SwitchModeButton />
-        <div className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+        <LogoutButton />
+        <div className="rounded-lg bg-muted/40 p-2.5 text-xs text-muted-foreground">
           <p className="font-medium text-foreground">Hack4Humanity MVP</p>
-          <p className="mt-1">
+          <p className="mt-0.5 text-[11px]">
             No vulnerable individual should fall through the cracks.
           </p>
         </div>

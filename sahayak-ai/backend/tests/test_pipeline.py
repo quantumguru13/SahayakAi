@@ -72,6 +72,7 @@ def test_upsert_dedupes_by_government_id() -> None:
     from app.models.schemas import ExtractedDocument
 
     s = DataStore()
+    s.set_active_mode("LIVE")
     before = len(s.list_beneficiaries())
     extraction = ExtractedDocument(
         beneficiary_name="Test Person",

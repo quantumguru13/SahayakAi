@@ -3,85 +3,95 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useAuth } from "@/components/auth/auth-provider";
-import { LoginScreen } from "@/components/auth/login-screen";
 import { BrandedLoader } from "@/components/shared/branded-loader";
+import { isAuthenticated } from "@/lib/auth";
 import { useHealth, useSetMode } from "@/lib/hooks";
 import { getRememberedMode } from "@/lib/session";
 import type { PipelineMode } from "@/lib/types";
 import { Sidebar } from "./sidebar";
 
-// Routes that render full-screen without the workspace chrome (no sidebar/login gate).
-const BARE_ROUTES = ["/"];
+const BARE_ROUTES = ["/login", "/"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { authEnabled, loading, session } = useAuth();
   const { data: health } = useHealth();
   const setMode = useSetMode();
 
+  const isLoginRoute = pathname === "/login";
   const isBare = BARE_ROUTES.includes(pathname);
 
-  // Read sessionStorage after mount only — reading during render would produce
-  // a server/client markup mismatch.
-  const [remembered, setRemembered] = useState<PipelineMode | null>(null);
-  const [resolved, setResolved] = useState(false);
+  // Read auth state on client side to prevent SSR hydration mismatch
+  const [authResolved, setAuthResolved] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const [rememberedMode, setRememberedMode] = useState<PipelineMode | null>(null);
 
-  // Read storage FRESH on every route change and decide in the same pass. Using
-  // the `remembered` state here instead would test the previous route's value —
-  // which bounced a just-logged-in user straight back to the login page.
+  // 1) Evaluate Local Authentication & Perform Required Redirects
   useEffect(() => {
-    if (isBare) {
-      setResolved(true);
-      return;
+    const isAuth = isAuthenticated();
+    setAuthed(isAuth);
+    setAuthResolved(true);
+
+    if (!isAuth && !isLoginRoute) {
+      router.replace("/login");
+    } else if (isAuth && isLoginRoute) {
+      router.replace("/");
     }
-    const current = getRememberedMode();
-    if (current === null) {
+  }, [pathname, isLoginRoute, router]);
+
+  // 2) For Workspace Routes (/dashboard, /beneficiaries, etc.), Check Pipeline Mode
+  useEffect(() => {
+    if (!authResolved || !authed || isBare) return;
+
+    const currentMode = getRememberedMode();
+    if (currentMode === null) {
       router.replace("/");
       return;
     }
-    setRemembered(current);
-    setResolved(true);
-  }, [pathname, isBare, router]);
+    setRememberedMode(currentMode);
+  }, [pathname, isBare, authResolved, authed, router]);
 
-  // Re-apply the logged-in mode if the backend drifted from it (e.g. uvicorn was
-  // restarted mid-demo, resetting its global active mode).
+  // 3) Re-sync Backend Pipeline Mode if required
   useEffect(() => {
     if (
-      resolved &&
+      authResolved &&
+      authed &&
       !isBare &&
-      remembered !== null &&
+      rememberedMode !== null &&
       health?.active_mode &&
-      health.active_mode !== remembered &&
+      health.active_mode !== rememberedMode &&
       !setMode.isPending
     ) {
-      setMode.mutate(remembered);
+      setMode.mutate(rememberedMode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolved, isBare, remembered, health?.active_mode]);
+  }, [authResolved, authed, isBare, rememberedMode, health?.active_mode, setMode]);
 
-  // Login page owns the whole viewport.
+  // Initial loader while client verifies local storage auth state
+  if (!authResolved) {
+    return <BrandedLoader label="Securing workspace…" />;
+  }
+
+  // If unauthenticated and trying to access any page other than /login
+  if (!authed && !isLoginRoute) {
+    return <BrandedLoader label="Redirecting to login…" />;
+  }
+
+  // If authenticated and trying to access /login
+  if (authed && isLoginRoute) {
+    return <BrandedLoader label="Entering workspace…" />;
+  }
+
+  // Full-screen bare pages (/login when unauthenticated, / when authenticated)
   if (isBare) {
     return <>{children}</>;
   }
 
-  // Resolving the session choice, or redirecting — don't flash the workspace.
-  if (!resolved || remembered === null) {
-    return <BrandedLoader label="Loading your workspace…" />;
+  // Workspace routes waiting for mode resolution
+  if (rememberedMode === null) {
+    return <BrandedLoader label="Loading workspace…" />;
   }
 
-  // Auth on, still resolving the session -> branded full-screen loader.
-  if (authEnabled && loading) {
-    return <BrandedLoader label="Securing your workspace…" />;
-  }
-
-  // Auth on, no session -> login gate replaces the whole app.
-  if (authEnabled && !session) {
-    return <LoginScreen />;
-  }
-
-  // Demo mode (auth off) or authenticated -> the normal workspace shell.
+  // Workspace layout with sidebar (/dashboard, /beneficiaries, /intake, /reports)
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
