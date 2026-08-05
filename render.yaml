@@ -17,7 +17,6 @@ services:
       # Which origins may call this API from a browser. Add your Hosting domains.
       - key: CORS_ORIGINS
         value: https://sahayakai-f45db.web.app,https://sahayakai-f45db.firebaseapp.com
-      # Guarantees the deterministic demo pipeline: the free tier has 512MB RAM
-      # and no Tesseract binary, so real OCR cannot run here anyway.
-      - key: FORCE_DEMO_MODE
-        value: "true"
+    # No FORCE_DEMO_MODE: the image now ships Tesseract, so LIVE mode can read
+    # real uploads. Set FORCE_DEMO_MODE=true to pin the deterministic pipeline
+    # for a stage demo.

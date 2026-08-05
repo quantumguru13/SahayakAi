@@ -124,10 +124,12 @@ frontend.
 > next request takes ~30–50s. Warm it up before presenting by loading
 > `/health` once.
 
-> **Why `FORCE_DEMO_MODE=true`?** The free instance has 512MB RAM and the slim
-> image ships no Tesseract binary, so real OCR can't run there. Add
-> `apt-get install -y tesseract-ocr` to the Dockerfile and drop the flag to
-> enable LIVE mode — watch memory on the free plan.
+> **LIVE mode in the cloud.** The image installs `tesseract-ocr` (+ `-eng` and
+> `libglib2.0-0` for OpenCV), so real uploads are transcribed offline. The free
+> instance only has 512MB RAM, though — OpenCV preprocessing plus Tesseract on a
+> large scan can hit that ceiling and restart the service. Set
+> `FORCE_DEMO_MODE=true` to pin the deterministic pipeline if a demo must not
+> fail.
 
 > The case store is in-memory unless Supabase is configured, so a restart resets
 > the data. Set `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` for real persistence.
