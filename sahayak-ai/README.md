@@ -125,10 +125,12 @@ frontend.
 > `/health` once.
 
 > **LIVE mode in the cloud.** The image installs `tesseract-ocr` (+ `-eng` and
-> `libglib2.0-0` for OpenCV), so real uploads are transcribed offline. The free
-> instance only has 512MB RAM, though — OpenCV preprocessing plus Tesseract on a
-> large scan can hit that ceiling and restart the service. Set
-> `FORCE_DEMO_MODE=true` to pin the deterministic pipeline if a demo must not
+> `libglib2.0-0` for OpenCV), so real uploads are transcribed offline — no API
+> key, no network. Measured peak RSS for a full upload → OCR → extraction →
+> urgency → scheme-match pass on an A4 scan (1240×1754) is **112MB**, against
+> Render's 512MB free tier. Memory scales with pixel count, so a 12MP phone
+> photo is the case to watch; downscale on the client if you hit a restart.
+> `FORCE_DEMO_MODE=true` pins the deterministic pipeline when a demo must not
 > fail.
 
 > The case store is in-memory unless Supabase is configured, so a restart resets
