@@ -8,6 +8,9 @@
 .env.*
 !.env.example
 !.env.local.example
+# NEXT_PUBLIC_* values are compiled into the client bundle, so they are public
+# by definition — keeping this committed makes the frontend deploy reproducible.
+!.env.production
 *.pem
 *.key
 secrets.json
@@ -53,6 +56,10 @@ desktop.ini
 # --- Claude Code ------------------------------------------------------------
 # launch.json is shared (dev-server config); settings.local.json is per-machine.
 .claude/settings.local.json
+
+# --- Firebase ---------------------------------------------------------------
+# Local deploy cache; firebase.json / .firebaserc are committed.
+.firebase/
 
 # --- Misc -------------------------------------------------------------------
 *.log

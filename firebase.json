@@ -1,0 +1,26 @@
+{
+  "hosting": {
+    "public": "sahayak-ai/frontend/out",
+    "cleanUrls": true,
+    "predeploy": ["npm --prefix sahayak-ai/frontend run build"],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/beneficiaries/*",
+        "destination": "/beneficiaries/__id__.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/_next/static/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  }
+}

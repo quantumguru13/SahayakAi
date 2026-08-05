@@ -19,7 +19,12 @@ class Settings(BaseSettings):
     # --- App ---
     app_name: str = "Sahayak AI"
     api_v1_prefix: str = "/api/v1"
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # The deployed frontend (Firebase Hosting) calls this API cross-origin, so
+    # both Hosting domains ship as defaults. Override with CORS_ORIGINS.
+    cors_origins: str = (
+        "http://localhost:3000,http://127.0.0.1:3000,"
+        "https://sahayakai-f45db.web.app,https://sahayakai-f45db.firebaseapp.com"
+    )
 
     # --- OpenAI ---
     openai_api_key: str = ""

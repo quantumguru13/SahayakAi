@@ -1,0 +1,23 @@
+# Render Blueprint — deploys the FastAPI backend as a free web service.
+#
+# The Next.js frontend is NOT here: it stays on Firebase Hosting (free, never
+# sleeps). This service only serves /api/v1/** and /health, cross-origin.
+#
+# Render sets $PORT; the Dockerfile's CMD already honours it.
+services:
+  - type: web
+    name: sahayak-ai-api
+    runtime: docker
+    plan: free
+    region: singapore # closest Render region to India
+    dockerfilePath: ./sahayak-ai/backend/Dockerfile
+    dockerContext: ./sahayak-ai/backend
+    healthCheckPath: /health
+    envVars:
+      # Which origins may call this API from a browser. Add your Hosting domains.
+      - key: CORS_ORIGINS
+        value: https://sahayakai-f45db.web.app,https://sahayakai-f45db.firebaseapp.com
+      # Guarantees the deterministic demo pipeline: the free tier has 512MB RAM
+      # and no Tesseract binary, so real OCR cannot run here anyway.
+      - key: FORCE_DEMO_MODE
+        value: "true"

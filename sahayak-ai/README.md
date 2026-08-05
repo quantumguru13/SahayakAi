@@ -89,6 +89,57 @@ Open http://localhost:3000 → redirects to the dashboard.
 
 ---
 
+## ☁️ Deployment
+
+Both halves deploy on free tiers, with no card required:
+
+| Piece | Target | How |
+| ----- | ------ | --- |
+| Next.js frontend | **Firebase Hosting** (Spark, free) | `output: "export"` → `frontend/out` |
+| FastAPI backend | **Render** web service (free) | the existing [Dockerfile](backend/Dockerfile), via [`render.yaml`](../render.yaml) |
+
+They live on different origins, so the backend allows the Hosting domains via
+`CORS_ORIGINS` (defaulted in [`app/core/config.py`](backend/app/core/config.py))
+and the frontend points at the API with `NEXT_PUBLIC_API_URL` in
+[`frontend/.env.production`](frontend/.env.production).
+
+### Frontend
+
+```bash
+firebase deploy --only hosting   # rebuilds the export, then publishes
+```
+
+`firebase.json` rewrites `/beneficiaries/*` onto a single prerendered
+placeholder page — a static export can't know case ids at build time, so the
+detail page reads the real id off the URL.
+
+### Backend
+
+Push this repo to GitHub, then on Render: **New → Blueprint**, pick the repo,
+and `render.yaml` provisions the service. Copy the resulting
+`https://<name>.onrender.com` URL into `NEXT_PUBLIC_API_URL` and redeploy the
+frontend.
+
+> **Free tier sleeps.** After ~15 minutes idle the service spins down, so the
+> next request takes ~30–50s. Warm it up before presenting by loading
+> `/health` once.
+
+> **Why `FORCE_DEMO_MODE=true`?** The free instance has 512MB RAM and the slim
+> image ships no Tesseract binary, so real OCR can't run there. Add
+> `apt-get install -y tesseract-ocr` to the Dockerfile and drop the flag to
+> enable LIVE mode — watch memory on the free plan.
+
+> The case store is in-memory unless Supabase is configured, so a restart resets
+> the data. Set `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` for real persistence.
+
+### Not using Firebase Functions
+
+Cloud Functions would put the API on the same origin as the frontend (no CORS,
+no cold sleep) via a Hosting rewrite, but it **requires the paid Blaze plan** —
+Spark has no compute at all.
+
+---
+
 ## 🎬 5-minute demo script
 
 | Time | Beat | Action |
