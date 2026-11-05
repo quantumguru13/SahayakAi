@@ -300,16 +300,7 @@ Please contact the team before using it for commercial applications.
 
 ---
 
-# 🙏 Acknowledgements
 
-Special thanks to:
-
-- Hack4Humanity
-- OpenAI
-- Next.js
-- FastAPI
-- Supabase
-- The NGO community whose real-world challenges inspired this project.
 
 ---
 
